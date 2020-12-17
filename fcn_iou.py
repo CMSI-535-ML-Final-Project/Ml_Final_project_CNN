@@ -9,7 +9,8 @@ TODO: Report what each member did in this project
 
 '''
 import argparse
-import torch, torchvision
+import torch
+import torchvision
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -356,9 +357,10 @@ def evaluate(net, dataloader, classes):
 
     # TODO: Plot images
     plot_images(
-        X=images, 
+        X=images,
+        Y=predictions,
         n_row=2, 
-        n_col=2, 
+        n_col=args.batch_size, 
         fig_title='Image Segmentation of fully convolutional neural neteorks using pytorch', 
         subplot_titles=class_label)
 
@@ -387,44 +389,6 @@ def intersection_over_union(prediction, ground_truth):
     
     return score_IOU
 
-def peak_signal_to_noise_ratio(prediction, ground_truth):
-    '''
-    Computes the peak signal to noise ratio (PSNR) between prediction and ground truth
-
-    Args:
-        prediction : numpy
-            N x h x w prediction
-        ground_truth : numpy
-            N x h x w ground truth
-
-    Returns:
-        float : peak signal to noise ratio
-    '''
-
-    # TODO: Computes peak signal to noise ratio
-    # Implement ONLY if you are working on image reconstruction or denoising
-
-    return 0.0
-
-def mean_squared_error(prediction, ground_truth):
-    '''
-    Computes the mean squared error (MSE) between prediction and ground truth
-
-    Args:
-        prediction : numpy
-            N x h x w prediction
-        ground_truth : numpy
-            N x h x w ground truth
-
-    Returns:
-        float : mean squared error
-    '''
-
-    # TODO: Computes mean squared error
-    # Implement ONLY if you are working on image reconstruction or denoising
-
-    return 0.0
-
 def plot_images(X, Y, n_row, n_col, fig_title, subplot_titles):
     '''
     Creates n_row by n_col panel of images
@@ -448,6 +412,32 @@ def plot_images(X, Y, n_row, n_col, fig_title, subplot_titles):
     fig.suptitle(fig_title)
 
     # TODO: Visualize your input images and predictions
+
+    fig = plt.figure()
+    fig.suptitle(fig_title)
+
+    for i in range(1, n_row * n_col + 1):
+
+        ax = fig.add_subplot(n_row, n_col, i)
+
+        index = i - 1
+        if index >= (n_row * n_col /  2):
+            x_i = Y[index, ...]
+        else:
+            x_i = X[index, ...]
+        subplot_title_i = subplot_titles[index]
+
+        if len(x_i.shape) == 1:
+            x_i = np.expand_dims(x_i, axis=0)
+
+        ax.set_title(subplot_title_i)
+        ax.imshow(x_i)
+
+        plt.box(False)
+        plt.axis('off')
+        
+    plt.show()
+
 
 
 if __name__ == '__main__':
