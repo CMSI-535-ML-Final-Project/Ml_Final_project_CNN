@@ -207,29 +207,7 @@ class FullyConvolutionalNetwork(torch.nn.Module):
         x = self.relu_fc_2(self.fcn_2(x))
         x = self.drop2(x)
 
-        x = self.score(x)
-        x = self.upsample_1(x)
-        upsample_1 = x 
-
-        x = self.score_pool4(pool4)
-        x = x[:, :, 5:5 + upsample_1.size()[2], 5:5 + upsample_1.size()[3]]
-        score_pool4c = x  
-
-        x = upsample_1 + score_pool4c  
-        x = self.upsample_pool(x)
-        upsample_pool = x  
-
-        x = self.score_pool3(pool3)
-        x = x[:, :,
-              9:9 + upsample_pool.size()[2],
-              9:9 + upsample_pool.size()[3]]
-        score_pool3c = x  
-
-        x = upsample_pool + score_pool3c  
-
-        x = self.upsampling_2(x)
-        x = x[:, :, 31:31 + c.size()[2], 31:31 + c.size()[3]].contiguous()
-        
+        #yet to forward the transposed layer(upsampling)       
         
         return x
 
