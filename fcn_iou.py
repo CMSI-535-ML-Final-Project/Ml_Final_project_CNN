@@ -435,7 +435,7 @@ if __name__ == '__main__':
         transform=data_preprocess_transform)
 
     # Setup a dataloader (iterator) to fetch from the training set
-    dataloader_train = torch.utils.DataLoader(
+    dataloader_train = torch.utils.data.DataLoader(
         dataset_train,
         batch_size=args.batch_size,
         shuffle=True,
@@ -450,7 +450,7 @@ if __name__ == '__main__':
         transform=data_preprocess_transform)
 
     # TODO: Setup a dataloader (iterator) to fetch from the validation/testing set
-    dataloader_test = torch.utils.DataLoader(
+    dataloader_test = torch.utils.data.DataLoader(
         dataset_train,
         batch_size=args.batch_size,
         shuffle=False,
@@ -492,7 +492,7 @@ if __name__ == '__main__':
 
     # TODO: Setup learning rate optimizer
     # https://pytorch.org/docs/stable/optim.html?#torch.optim.SGD
-    optimizer = torch.optim(
+    optimizer = torch.optim.SGD(
         net.parameters(),
         lr=args.learning_rate,
         weight_decay=args.weight_decay,
