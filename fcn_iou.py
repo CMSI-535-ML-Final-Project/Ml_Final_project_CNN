@@ -295,7 +295,7 @@ def evaluate(net, dataloader, classes):
 
         Please add any necessary arguments
     '''
-    n_correct = 0
+     n_correct = 0
     n_sample = 0
     
     # Make sure we do not backpropagate
@@ -303,47 +303,47 @@ def evaluate(net, dataloader, classes):
 
         for (images, labels) in dataloader:
             
-            #Vectorize images from (N, H, W, C) to (N, d)
+            
             shape = images.shape
             n_dim = np.prod(shape[1:])
             images = images.view(-1, n_dim)
-
+            
             # TODO: Forward through the network
             outputs = net(images)
             
             # TODO: Compute evaluation metric(s) for each sample
             _, predictions = torch.max(outputs, dim=1)
             n_sample = n_sample + labels.shape[0]
-            n_correct = n_correct + intersection_over_union(predictions, labels)
+            n_correct = n_correct + torch.sum(predictions == labels).item()
             
             
 
     # TODO: Compute mean evaluation metric(s)
     mean_accuracy = 100.0 * n_correct / n_sample
+    Intersetion_union = intersection_over_union(predictions, images)
     
     # TODO: Print scores
+    print('Jaccard Index of  %d images: %d %% ' % (n_sample, Intersetion_union))
     print('Mean accuracy over %d images: %d %%' % (n_sample, mean_accuracy))
-
+    
     # TODO: Convert the last batch of images back to original shape
     images = images.view(shape[0], shape[1], shape[2], shape[3])
     images = images.cpu().numpy()
     images = np.transpose(images, (0, 2, 3, 1))
 
     # TODO: Convert the last batch of predictions to the original image shape
-    for labels in predictions:
-        class_label = classes[labels]
-
+    predictions = predictions.view(shape[0], shape[1], shape[2], shape[3])
+    predictions = predictions.cpu().numpy()
+    predictions = np.transpose(predictions, (0, 2, 3, 1))
+    
     # TODO: Plot images
     plot_images(
-        X=images,
-        Y=predictions,
+        X=images, 
         n_row=2, 
-        n_col=args.batch_size, 
-        fig_title='Image Segmentation of fully convolutional neural neteorks using pytorch', 
-        subplot_titles=class_label)
+        n_col=2, 
+        fig_title='Image Segmentation of fully convolutional neural networks uf VOC-2012 dataset')
 
     plt.show()
-
 def intersection_over_union(prediction, ground_truth):
     '''
     Computes the intersection over union (IOU) between prediction and ground truth
@@ -423,6 +423,7 @@ if __name__ == '__main__':
     # TODO: Set up data preprocessing step
     # https://pytorch.org/docs/stable/torchvision/transforms.html
     data_preprocess_transform = torchvision.transforms.Compose([
+        torchvision.transforms.Resize((224,224)),
         torchvision.transforms.ToTensor(),
     ])
 
@@ -431,27 +432,29 @@ if __name__ == '__main__':
         root='./data',
         year='2012',
         image_set='train',
-        download='True',
-        transform=data_preprocess_transform)
-
+        download=True,
+        transform=data_preprocess_transform,
+        target_transform=data_preprocess_transform)
+    
     # Setup a dataloader (iterator) to fetch from the training set
     dataloader_train = torch.utils.data.DataLoader(
-        dataset_train,
+        dataset=dataset_train,
         batch_size=args.batch_size,
         shuffle=True,
-        num_workers=2)
-
+        num_workers=2,)
+    
     # Download and setup your validation/testing set
     dataset_test = torchvision.datasets.VOCSegmentation(
         root='./data',
         year='2012',
         image_set='val',
-        download='True',
-        transform=data_preprocess_transform)
+        download=True,
+        transform=data_preprocess_transform,
+        target_transform=data_preprocess_transform)
 
     # TODO: Setup a dataloader (iterator) to fetch from the validation/testing set
     dataloader_test = torch.utils.data.DataLoader(
-        dataset_train,
+        dataset=dataset_test,
         batch_size=args.batch_size,
         shuffle=False,
         num_workers=2)
